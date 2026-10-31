@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <p>Welcome, <strong sec:authentication="name">user</strong> - internal restaurant console.</p>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="label">Today Revenue (Paid)</div>
+            <div class="value" th:text="${todayRevenue}">0</div>
+        </div>
+        <div class="stat">
+            <div class="label">Active Orders</div>
+            <div class="value" th:text="${activeOrders}">0</div>
+        </div>
+        <div class="stat">
+            <div class="label">Free Tables</div>
+            <div class="value" th:text="${freeTables} + ' / ' + ${totalTables}">8 / 8</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h1>Top Items Today</h1>
+        <ol>
+            <li th:each="entry : ${topItems}">
+                <span th:text="${entry.key}">Item</span> -
+                <strong th:text="${entry.value} + ' sold'">0</strong>
+            </li>
+        </ol>
+        <p th:if="${#maps.isEmpty(topItems)}">No paid orders yet today.</p>
+    </div>
+
+    <div class="card">
+        <h1>Recent Orders</h1>
+        <table>
+            <thead>
+            <tr><th>Order</th><th>Table</th><th>Status</th><th>Total</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${recentOrders}">
+                <td th:text="'#' + ${o.id}">#1</td>
+                <td th:text="'T' + ${o.table.tableNumber}">T1</td>
+                <td><span class="badge info" th:text="${o.status}">PLACED</span></td>
+                <td th:text="${o.total}">0.00</td>
+                <td><a th:href="@{/orders/{id}(id=${o.id})}">View</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(recentOrders)}">
+                <td colspan="5">No orders yet.</td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a class="btn" th:href="@{/orders/new}">+ New Order</a></p>
+    </div>
+</div>
+</body>
+</html>

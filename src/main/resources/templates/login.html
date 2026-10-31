@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign in - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container" style="max-width:420px; margin-top:80px;">
+    <div class="card">
+        <h1>Restaurant Manager</h1>
+        <p class="error" th:if="${loginError}">Invalid username or password.</p>
+        <p th:if="${logoutMsg}" th:text="${logoutMsg}"></p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <form th:action="@{/login}" method="post">
+            <label>Username</label>
+            <input type="text" name="username" required autofocus>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <p>
+                <button type="submit">Sign in</button>
+            </p>
+        </form>
+        <p style="color:#6b7280; font-size:.85rem;">
+            Demo logins: admin/admin123 &middot; waiter1/waiter123 &middot; chef1/chef123
+        </p>
+    </div>
+</div>
+</body>
+</html>

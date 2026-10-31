@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Detail - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1 th:text="'Order #' + ${order.id} + ' - Table T' + ${order.table.tableNumber}">Order</h1>
+        <p>
+            Waiter: <strong th:text="${order.takenBy.fullName}">waiter</strong>
+            &nbsp;|&nbsp; Status: <span class="badge info" th:text="${order.status}">PLACED</span>
+        </p>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+
+        <table>
+            <thead>
+            <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Line Total</th><th th:if="${order.status.name() == 'PLACED'}"></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="line : ${order.items}">
+                <td th:text="${line.itemName}">Item</td>
+                <td th:text="${line.quantity}">1</td>
+                <td th:text="${line.unitPrice}">0.00</td>
+                <td th:text="${line.lineTotal}">0.00</td>
+                <td th:if="${order.status.name() == 'PLACED'}">
+                    <form th:action="@{/orders/{oid}/items/{iid}/remove(oid=${order.id}, iid=${line.id})}"
+                          method="post" class="inline">
+                        <button type="submit" class="danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(order.items)}">
+                <td colspan="5">No items yet.</td>
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td></td><td></td>
+                <td><strong th:text="${order.total}">0.00</strong></td>
+                <td th:if="${order.status.name() == 'PLACED'}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${order.status.name() == 'PLACED'}">
+            <h2>Add Item</h2>
+            <form th:action="@{/orders/{id}/items(id=${order.id})}" method="post" class="inline">
+                <label>Dish</label>
+                <select name="menuItemId" required>
+                    <option th:each="m : ${menuItems}" th:if="${m.available}" th:value="${m.id}"
+                            th:text="${m.name} + ' - ' + ${m.price}"></option>
+                </select>
+                <label>Quantity</label>
+                <input type="number" name="quantity" min="1" value="1" style="max-width:90px">
+                <p><button type="submit">Add to Order</button></p>
+            </form>
+        </div>
+
+        <p>
+            <form th:if="${order.status.name() == 'PLACED'}"
+                  th:action="@{/orders/{id}/send(id=${order.id})}" method="post" class="inline">
+                <button type="submit">Send to Kitchen</button>
+            </form>
+            <form th:if="${order.status.name() == 'PREPARING'}"
+                  th:action="@{/orders/{id}/ready(id=${order.id})}" method="post" class="inline"
+                  sec:authorize="hasAnyRole('KITCHEN','ADMIN','MANAGER')">
+                <button type="submit">Mark Ready</button>
+            </form>
+            <form th:if="${order.status.name() == 'READY'}"
+                  th:action="@{/orders/{id}/serve(id=${order.id})}" method="post" class="inline">
+                <button type="submit">Mark Served</button>
+            </form>
+            <form th:if="${order.status.name() == 'SERVED'}"
+                  th:action="@{/orders/{id}/pay(id=${order.id})}" method="post" class="inline">
+                <button type="submit">Mark Paid</button>
+            </form>
+            <form th:if="${order.status.name() == 'PLACED' or order.status.name() == 'PREPARING'}"
+                  th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" class="inline"
+                  sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <button type="submit" class="danger">Cancel Order</button>
+            </form>
+            <a class="btn" th:href="@{/orders}">Back to Orders</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

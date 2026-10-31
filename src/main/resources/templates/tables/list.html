@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tables - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1>Tables</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <table>
+            <thead>
+            <tr><th>Table</th><th>Capacity</th><th>Status</th><th>Set Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${tables}">
+                <td th:text="'T' + ${t.tableNumber}">T1</td>
+                <td th:text="${t.capacity} + ' seats'">4</td>
+                <td>
+                    <span class="badge ok" th:if="${t.status.name() == 'FREE'}">FREE</span>
+                    <span class="badge warn" th:if="${t.status.name() == 'RESERVED'}">RESERVED</span>
+                    <span class="badge no" th:if="${t.status.name() == 'OCCUPIED'}">OCCUPIED</span>
+                    <span class="badge no" th:if="${t.status.name() == 'OUT_OF_SERVICE'}">OUT OF SERVICE</span>
+                </td>
+                <td>
+                    <form th:action="@{/tables/{id}/status(id=${t.id})}" method="post" class="inline">
+                        <input type="hidden" name="status" value="FREE">
+                        <button type="submit" class="muted">Free</button>
+                    </form>
+                    <form th:action="@{/tables/{id}/status(id=${t.id})}" method="post" class="inline">
+                        <input type="hidden" name="status" value="OCCUPIED">
+                        <button type="submit" class="danger">Occupy</button>
+                    </form>
+                    <form th:action="@{/tables/{id}/status(id=${t.id})}" method="post" class="inline">
+                        <input type="hidden" name="status" value="RESERVED">
+                        <button type="submit" class="muted">Reserve</button>
+                    </form>
+                </td>
+                <td>
+                    <a class="btn" th:href="@{/tables/{id}/edit(id=${t.id})}">Edit</a>
+                    <form th:action="@{/tables/{id}/delete(id=${t.id})}" method="post" class="inline"
+                          onsubmit="return confirm('Delete this table?')">
+                        <button type="submit" class="danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(tables)}">
+                <td colspan="5">No tables yet.</td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a class="btn" th:href="@{/tables/new}">+ New Table</a></p>
+    </div>
+</div>
+</body>
+</html>

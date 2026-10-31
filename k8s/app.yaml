@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-app
+  namespace: restaurant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant-app
+  template:
+    metadata:
+      labels:
+        app: restaurant-app
+    spec:
+      containers:
+        - name: app
+          image: restaurant:1.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-app
+  namespace: restaurant
+spec:
+  type: LoadBalancer
+  selector:
+    app: restaurant-app
+  ports:
+    - port: 8081
+      targetPort: 8080

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Form - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1 th:text="${user.id == null} ? 'New User' : 'Edit User'">User</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <form th:action="@{/users/save}" method="post">
+            <input type="hidden" name="id" th:value="${user.id}">
+            <label>Username</label>
+            <input type="text" name="username" th:value="${user.username}" required
+                   th:readonly="${user.id != null}">
+            <label>Full Name</label>
+            <input type="text" name="fullName" th:value="${user.fullName}">
+            <label>Role</label>
+            <select name="role">
+                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"
+                        th:selected="${user.role == r}"></option>
+            </select>
+            <label>Password</label>
+            <input type="password" name="rawPassword"
+                   th:placeholder="${user.id != null} ? 'Leave blank to keep current password' : ''"
+                   th:required="${user.id == null}">
+            <label>
+                <input type="checkbox" name="enabled" th:checked="${user.id == null or user.enabled}"> Active
+            </label>
+            <p>
+                <button type="submit">Save</button>
+                <a class="btn" th:href="@{/users}">Cancel</a>
+            </p>
+        </form>
+    </div>
+</div>
+</body>
+</html>

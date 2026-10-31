@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Order - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1>New Order</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <table>
+            <thead>
+            <tr><th>Table</th><th>Capacity</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${tables}">
+                <td th:text="'T' + ${t.tableNumber}">T1</td>
+                <td th:text="${t.capacity} + ' seats'">4</td>
+                <td>
+                    <form th:action="@{/orders}" method="post" class="inline">
+                        <input type="hidden" name="tableId" th:value="${t.id}">
+                        <button type="submit">Open Order</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(tables)}">
+                <td colspan="3">No free tables right now.</td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a class="btn" th:href="@{/orders}">Back to Orders</a></p>
+    </div>
+</div>
+</body>
+</html>

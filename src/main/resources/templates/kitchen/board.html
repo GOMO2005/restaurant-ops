@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitchen Board - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <h1>Kitchen Board</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+    <div style="display:flex; gap:16px; align-items:flex-start;">
+        <div class="card" style="flex:1;">
+            <h2>New (PLACED)</h2>
+            <div th:each="o : ${newOrders}" style="border-top:1px solid #eee; padding:8px 0;">
+                <strong th:text="'#' + ${o.id} + ' - T' + ${o.table.tableNumber}">#1</strong>
+                <ul>
+                    <li th:each="line : ${o.items}">
+                        <span th:text="${line.quantity} + ' x ' + ${line.itemName}">1 x Item</span>
+                    </li>
+                </ul>
+                <form th:action="@{/kitchen/{id}/start(id=${o.id})}" method="post">
+                    <button type="submit">Start Cooking</button>
+                </form>
+            </div>
+            <p th:if="${#lists.isEmpty(newOrders)}">Nothing new.</p>
+        </div>
+        <div class="card" style="flex:1;">
+            <h2>Cooking (PREPARING)</h2>
+            <div th:each="o : ${cookingOrders}" style="border-top:1px solid #eee; padding:8px 0;">
+                <strong th:text="'#' + ${o.id} + ' - T' + ${o.table.tableNumber}">#1</strong>
+                <ul>
+                    <li th:each="line : ${o.items}">
+                        <span th:text="${line.quantity} + ' x ' + ${line.itemName}">1 x Item</span>
+                    </li>
+                </ul>
+                <form th:action="@{/kitchen/{id}/ready(id=${o.id})}" method="post">
+                    <button type="submit">Mark Ready</button>
+                </form>
+            </div>
+            <p th:if="${#lists.isEmpty(cookingOrders)}">Nothing cooking.</p>
+        </div>
+        <div class="card" style="flex:1;">
+            <h2>Ready (READY)</h2>
+            <div th:each="o : ${readyOrders}" style="border-top:1px solid #eee; padding:8px 0;">
+                <strong th:text="'#' + ${o.id} + ' - T' + ${o.table.tableNumber}">#1</strong>
+                <span class="badge ok">READY FOR PICKUP</span>
+            </div>
+            <p th:if="${#lists.isEmpty(readyOrders)}">Nothing ready.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

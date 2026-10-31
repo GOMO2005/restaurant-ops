@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: restaurant
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  DB_URL: "jdbc:mysql://mysql.restaurant.svc.cluster.local:3306/restaurantdb"

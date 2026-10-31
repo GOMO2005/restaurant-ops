@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1>Menu</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <p class="filter">
+            <a th:href="@{/menu}" th:classappend="${selected == null} ? 'active'">All</a>
+            <a th:each="c : ${categories}"
+               th:href="@{/menu(category=${c})}"
+               th:text="${c}"
+               th:classappend="${selected == c} ? 'active'">cat</a>
+        </p>
+        <table>
+            <thead>
+            <tr><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.name}">Name</td>
+                <td th:text="${item.category}">Cat</td>
+                <td th:text="${item.price}">Price</td>
+                <td>
+                    <span class="badge ok" th:if="${item.available}">Available</span>
+                    <span class="badge no" th:unless="${item.available}">Unavailable</span>
+                </td>
+                <td>
+                    <a class="btn" th:href="@{/menu/{id}/edit(id=${item.id})}">Edit</a>
+                    <form th:action="@{/menu/{id}/toggle(id=${item.id})}" method="post" class="inline">
+                        <button type="submit" class="muted" th:text="${item.available} ? 'Disable' : 'Enable'">Toggle</button>
+                    </form>
+                    <form th:action="@{/menu/{id}/delete(id=${item.id})}" method="post" class="inline"
+                          onsubmit="return confirm('Delete this item?')">
+                        <button type="submit" class="danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(items)}">
+                <td colspan="5">No menu items in this view.</td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a class="btn" th:href="@{/menu/new}">+ New Menu Item</a></p>
+    </div>
+</div>
+</body>
+</html>

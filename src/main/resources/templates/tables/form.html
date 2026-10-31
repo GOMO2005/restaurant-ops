@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Table Form - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1 th:text="${table.id == null} ? 'New Table' : 'Edit Table'">Table</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <form th:action="@{/tables/save}" th:object="${table}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <label>Table Number</label>
+            <input type="number" min="1" th:field="*{tableNumber}" required>
+            <label>Capacity (seats)</label>
+            <input type="number" min="1" th:field="*{capacity}" required>
+            <label>Status</label>
+            <select th:field="*{status}">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+            </select>
+            <p>
+                <button type="submit">Save</button>
+                <a class="btn" th:href="@{/tables}">Cancel</a>
+            </p>
+        </form>
+    </div>
+</div>
+</body>
+</html>

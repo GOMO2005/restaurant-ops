@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Users - Restaurant Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: nav}"></nav>
+<div class="container">
+    <div class="card">
+        <h1>Staff Users</h1>
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <table>
+            <thead>
+            <tr><th>Username</th><th>Full Name</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.username}">admin</td>
+                <td th:text="${u.fullName}">Name</td>
+                <td th:text="${u.role}">ADMIN</td>
+                <td>
+                    <span class="badge ok" th:if="${u.enabled}">ACTIVE</span>
+                    <span class="badge no" th:unless="${u.enabled}">DISABLED</span>
+                </td>
+                <td>
+                    <a class="btn" th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
+                    <form th:action="@{/users/{id}/toggle(id=${u.id})}" method="post" class="inline">
+                        <button type="submit" class="muted" th:text="${u.enabled} ? 'Disable' : 'Enable'">Toggle</button>
+                    </form>
+                    <form th:action="@{/users/{id}/delete(id=${u.id})}" method="post" class="inline"
+                          onsubmit="return confirm('Delete this user?')">
+                        <button type="submit" class="danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a class="btn" th:href="@{/users/new}">+ New User</a></p>
+    </div>
+</div>
+</body>
+</html>
